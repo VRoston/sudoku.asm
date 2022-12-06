@@ -153,28 +153,26 @@ innerl:
 le_matriz ENDP
 
 
-imp_matriz proc
+IMP_MATRIZ PROC
     PUSHREGISTRADOR
 
+    MOV AH,02
+    MOV CX,LINHA
 
-    mov ah,02
-    mov cX,linha
-
-
-outer:
-    mov di,coluna
-    xor si,si
-inner:
-    mov dl, [bx][si]
-    or dl,30h
-    int 21H
-    inc si
-    dec di
-    jnz inner
+OUTER:
+    MOV DI,COLUNA
+    XOR SI,SI
+INNER:
+    MOV DL, [BX][SI]
+    OR DL,30H
+    INT 21H
+    INC SI
+    DEC DI
+    JNZ INNER
     PULA_LINHA
-    add bx,coluna
-    loop outer
+    ADD BX,COLUNA
+    LOOP OUTER
     POPREGISTRADOR
     RET
-imp_matriz ENDP
+IMP_MATRIZ ENDP
 END MAIN
