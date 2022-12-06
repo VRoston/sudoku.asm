@@ -63,9 +63,6 @@ ENDM
     LINHA EQU 9
     COLUNA EQU 9
 
-    ofmx dw ?
-    ofmy dw ?
-    ofmw dw ?
 
     ;MATRIZ1 DB LINHA DUP (COLUNA DUP (?))
     JOGO_FACIL DB '4','2','7',  '5', ? ,'8',  '9', ? ,'3'
@@ -158,8 +155,17 @@ IMP_MATRIZ PROC
 
     MOV AH,02
     MOV CX,LINHA
+    
 
 OUTER:
+    PUSH AX
+    PUSH DX
+    MOV AH, 02
+    MOV DL, 32
+    INT 21H
+    POP DX
+    POP AX
+
     MOV DI,COLUNA
     XOR SI,SI
 INNER:
@@ -168,6 +174,15 @@ INNER:
     INT 21H
     INC SI
     DEC DI
+
+    PUSH AX
+    PUSH DX
+    MOV AH, 02
+    MOV DL, 32
+    INT 21H
+    POP DX
+    POP AX
+
     JNZ INNER
     PULA_LINHA
     ADD BX,COLUNA
