@@ -82,8 +82,8 @@ ENDM
     MSG10 DB 10, 13, '    5- PARA FINALIZAR O JOGO DIGITE 0 NA LINHA E NA COLUNA', '$'
 
 ; contadores do jogo
-    CORRETO EQU 0
-    ERRADO  EQU 0
+    CORRETO DB ?
+    ERRADO  DB ?
 
 ; auxiliar das matrizes
     LINHA EQU 9
@@ -116,14 +116,56 @@ ENDM
                         DB 2,5,6,  4,7,3,  8,9,1
 
 ; matriz do jogo medio
+    JOGO_MEDIO DB 4,2,7,  5,?,8,  9,?,3
+               DB ?,?,5,  ?,4,?,  ?,?,7
+               DB 6,8,?,  ?,?,?,  ?,?,7
+               
+               DB 7,6,?,  ?,1,?,  ?,3,?
+               DB 1,?,2,  ?,?,5,  ?,?,9
+               DB ?,9,8,  ?,?,4,  ?,6,?
+               
+               DB 3,?,?,  8,5,1,  ?,?,?
+               DB 8,7,1,  ?,?,6,  ?,?,?
+               DB 2,?,6,  4,?,3,  ?,?,1
 
 ; matriz resposta do jogo medio
-
+    JOGO_MEDIO_RESPOSTA DB 4,2,7,  5,?,8,  9,?,3
+                        DB ?,?,5,  ?,4,?,  ?,?,7
+                        DB 6,8,?,  ?,?,?,  ?,?,7
+               
+                        DB 7,6,?,  ?,1,?,  ?,3,?
+                        DB 1,?,2,  ?,?,5,  ?,?,9
+                        DB ?,9,8,  ?,?,4,  ?,6,?
+               
+                        DB 3,?,?,  8,5,1,  ?,?,?
+                        DB 8,7,1,  ?,?,6,  ?,?,?
+                        DB 2,?,6,  4,?,3,  ?,?,1
 
 ; matriz do jogo dificil
-
+    JOGO_DIFICIL DB 4,2,7,  5,?,8,  9,?,3
+                 DB ?,?,5,  ?,4,?,  ?,?,7
+                 DB 6,8,?,  ?,?,?,  ?,?,7
+               
+                 DB 7,6,?,  ?,1,?,  ?,3,?
+                 DB 1,?,2,  ?,?,5,  ?,?,9
+                 DB ?,9,8,  ?,?,4,  ?,6,?
+               
+                 DB 3,?,?,  8,5,1,  ?,?,?
+                 DB 8,7,1,  ?,?,6,  ?,?,?
+                 DB 2,?,6,  4,?,3,  ?,?,1
+                 
 ; matriz resposta do jogo dificil
-
+    JOGO_DIFICIL_RESPOSTA DB 4,2,7,  5,?,8,  9,?,3
+                          DB ?,?,5,  ?,4,?,  ?,?,7
+                          DB 6,8,?,  ?,?,?,  ?,?,7
+               
+                          DB 7,6,?,  ?,1,?,  ?,3,?
+                          DB 1,?,2,  ?,?,5,  ?,?,9
+                          DB ?,9,8,  ?,?,4,  ?,6,?
+               
+                          DB 3,?,?,  8,5,1,  ?,?,?
+                          DB 8,7,1,  ?,?,6,  ?,?,?
+                          DB 2,?,6,  4,?,3,  ?,?,1
 
 .CODE
 MAIN PROC
