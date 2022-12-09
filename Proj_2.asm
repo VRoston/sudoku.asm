@@ -248,27 +248,31 @@ ENCERRA_PROGRAMA2:
 
 JOGO_HARD:
     LIMPA_TELA
+
     LEA BX, JOGO_DIFICIL
+
     CALL CONTADOR_ERROS
     CALL CONTADOR_ACERTOS_DIFICIL
     CALL IMP_MATRIZ
+
     CALL LE_RESPOSTA_USUARIO_DIFICIL
+
     CALL CONTINUA_OU_NAO_ERRO
         JE GAME_OVER2
+
     CALL VENCEU_DIFICIL
         JE YOU_WIN2
+
     JMP JOGO_HARD
 
 
 GAME_OVER2:
     CALL GAME_OVER
     JMP VOLTA_MENU
-    ENTRADA_CARACTERE
 
 YOU_WIN2:
     CALL YOU_WIN
     JMP VOLTA_MENU
-    ENTRADA_CARACTERE
     
 ENCERRA_PROGRAMA:
     CALL FIM_PROGRAMA
@@ -574,10 +578,11 @@ CONTADOR_ACERTOS_FACIL PROC
     LIMPA_REGISTRADOR
     LEA DX, MSG29
     IMPRIME_MSG
-    MOV DL, CORRETO
-    ADD DL, 30H
-    MOV AH, 02
-    INT 21H
+    CALL OUTPUT
+    ;MOV DL, CORRETO
+    ;ADD DL, 30H
+    ;MOV AH, 02
+    ;INT 21H
     LEA DX, MSG31
     IMPRIME_MSG
     PULA_LINHA
@@ -745,6 +750,29 @@ YOU_WIN PROC
 
     RET
 YOU_WIN ENDP
+
+; conversao do resultado em 2 numeros de 2 bits e imprime na tela
+OUTPUT PROC
+ ; o ultimo passo da conta, impressao do resultado na tela, que esta armazenado na variavel RESULTADO
+    XOR AX, AX          ; zera conteudo de AX
+    MOV AL, CORRETO   ; passa o resultado para AL
+    MOV BL, 10          ; atribui 10 para BL                        
+    DIV BL              ; divide o AL por 10 - (AL)/10 - agora o resultado da divisao esta em AL        
+                        ;  e o resto da divisao esta em AH          
+    MOV BX,AX           ; passa esse resultado para BX              
+
+    MOV DL, BL          
+    ADD DL, 30H         ; imprime o que estava em AL na casa da dezena   
+    MOV AH, 02H
+    INT 21H
+    
+    MOV DL, BH
+    ADD DL, 30H         ; imprime o que estava em AH na casa da unidade  
+    MOV AH, 02H
+    INT 21H
+
+    RET                 ; retorna a funcao com o resultado da operacao impresso na tela usando saida de 2 bits
+OUTPUT ENDP
 
 ; limpa a tela e imprime a menssagem de despedida
 FIM_PROGRAMA PROC
