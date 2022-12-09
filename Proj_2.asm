@@ -77,7 +77,7 @@ ENDM
     MSG6  DB 10, 13, '    II - O JOGO POSSUI 3 NIVEIS DE DIFICULDADE: FACIL, MEDIO, DIFICL', '$'
     MSG7  DB 10, 13, '    III- PARA JOGAR DIGITE O NUMERO DA COLUNA E DA LINHA AO QUAL VOCE QUER ATRI- BUIR O VALOR DEPOIS BASTA DIGITAR O VALOR A SER ATRIBUIDO E APERTAR ENTER', '$'
     MSG9  DB 10, 13, '    IV - VOCE TERA DIREITO A 3 ERROS NO JOGO, SENDO NO 3 ERRO FIM DE JOGO', '$'
-    MSG10 DB 10, 13, '    V  - A LINHA E A COLUNA COMECAM EM 1 E VAI ATÉ 9', '$'
+    MSG10 DB 10, 13, '    V  - A LINHA E A COLUNA COMECAM EM 1 E VAI ATE 9', '$'
     MSG11 DB 10, 13, ' ERROS :', '$'
     MSG12 DB         '/3 :', '$'
     MSG29 DB         '        ACERTOS :', '$'
@@ -314,7 +314,7 @@ PRIMEIRA_PAGINA ENDP
 
 ; mostra as regras e a opcão de dificuldade do jogo
 MENU_PRINCIPAL PROC
-    LEA DX, MSG4
+    LEA DX, MSG4                    ; imprime todas as menssagens do menu
     IMPRIME_MSG
     LEA DX, MSG6
     IMPRIME_MSG
@@ -336,7 +336,7 @@ MENU_PRINCIPAL PROC
     LEA DX, MSG26
     IMPRIME_MSG
 
-    ENTRADA_CARACTERE
+    ENTRADA_CARACTERE              ; le o caractere para escolher dificuldade ou sair do programa
     SUB AL,30H
 
 
