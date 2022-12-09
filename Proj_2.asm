@@ -77,7 +77,7 @@ ENDM
     MSG6  DB 10, 13, '    II - O JOGO POSSUI 3 NIVEIS DE DIFICULDADE: FACIL, MEDIO, DIFICL', '$'
     MSG7  DB 10, 13, '    III- PARA JOGAR DIGITE O NUMERO DA COLUNA E DA LINHA AO QUAL VOCE QUER ATRI- BUIR O VALOR DEPOIS BASTA DIGITAR O VALOR A SER ATRIBUIDO E APERTAR ENTER', '$'
     MSG9  DB 10, 13, '    IV - VOCE TERA DIREITO A 3 ERROS NO JOGO, SENDO NO 3 ERRO FIM DE JOGO', '$'
-    MSG10 DB 10, 13, '    V  - PARA FINALIZAR O JOGO DIGITE 0 NA LINHA E NA COLUNA', '$'
+    MSG10 DB 10, 13, '    V  - A LINHA E A COLUNA COMECAM EM 1 E VAI ATÉ 9', '$'
     MSG11 DB 10, 13, ' ERROS :', '$'
     MSG12 DB         '/3 :', '$'
     MSG29 DB         '        ACERTOS :', '$'
@@ -169,7 +169,7 @@ ENDM
                   DB ?,7,9,  2,5,?,  6,?,?
                
                   DB ?,5,8,  ?,7,?,  1,2,?
-                  DB ?,?,?,  1,?,?,  5,?,?
+                  DB ?,?,?,  1,?,?,  5,?,9
                   DB ?,?,1,  ?,?,?,  7,?,?
                
                   DB ?,?,7,  8,?,?,  ?,6,?
@@ -207,8 +207,8 @@ VOLTA_MENU:
 
     CALL MENU_PRINCIPAL         ; menu principal
     CMP AL, 1
-        JE JOGO_EASY
-    CMP AL, 2
+        JE JOGO_EASY            ; escolhe a dificuldade do jogo, ou caso aperte qualquer outra tecla
+    CMP AL, 2                   ;  o programa pergunta de novo
         JE JOGO_MEDIUM
     CMP AL, 3
         JE JOGO_HARD
@@ -219,16 +219,16 @@ VOLTA_MENU:
 
 JOGO_EASY:
     LIMPA_TELA
-    LEA BX, JOGO_FACIL
-    CALL CONTADOR_ERROS
-    CALL CONTADOR_ACERTOS_FACIL
-    CALL IMP_MATRIZ
-    CALL LE_RESPOSTA_USUARIO_FACIL
-    CALL CONTINUA_OU_NAO_ERRO
-        JE GAME_OVER2
-    CALL VENCEU_FACIL
+    LEA BX, JOGO_FACIL              ; carrega a matriz do jogo facil
+    CALL CONTADOR_ERROS             ; chama a função que imprime os erros
+    CALL CONTADOR_ACERTOS_FACIL     ; chama a função que imprime os acertos
+    CALL IMP_MATRIZ                 ; chama a função que imprime a matriz de base do jogo que atualiza a cada rodada
+    CALL LE_RESPOSTA_USUARIO_FACIL  ; chama a função que le a resposta do usuário
+    CALL CONTINUA_OU_NAO_ERRO       ; depois da jogada, se tiver 3 erros ou todas as respostas corretas, a rodada encerra
+        JE GAME_OVER2               ; se tiver 3 erros, chama a função que imprime GAME OVER
+    CALL VENCEU_FACIL               ; se tiver todas as respostas corretas, chama a função que imprime YOU WIN
         JE YOU_WIN2
-    JMP JOGO_EASY
+    JMP JOGO_EASY                   ; se não tiver 3 erros e nem todas as respostas corretas, volta para o inicio do jogo
 
 JOGO_MEDIUM:
     LIMPA_TELA
@@ -243,7 +243,7 @@ JOGO_MEDIUM:
         JE YOU_WIN2
     JMP JOGO_MEDIUM
 
-ENCERRA_PROGRAMA2:
+ENCERRA_PROGRAMA2:                  ; o jump não alcanca, entao fiz uma ponta
     JMP ENCERRA_PROGRAMA
 
 JOGO_HARD:
@@ -275,7 +275,7 @@ YOU_WIN2:
     JMP VOLTA_MENU
     
 ENCERRA_PROGRAMA:
-    CALL FIM_PROGRAMA
+    CALL FIM_PROGRAMA               ; chama a função que imprime a mensagem de despedida e sai do programa
     EXIT_DOS
 MAIN ENDP
 
@@ -348,11 +348,17 @@ LE_RESPOSTA_USUARIO_FACIL PROC
     PUSHREGISTRADOR
     LIMPA_REGISTRADOR
 
- ; entrada do caractere da coluna
+ ; entrada do caractere da linha
+ VOLTA1:
     LEA DX, MSG13
     IMPRIME_MSG
     ENTRADA_CARACTERE
     SUB AL,30H
+        CMP AL, 9
+        JG VOLTA1
+        CMP AL, 0
+        JLE VOLTA1
+
 
     MOV CX, 9
     MUL CX
@@ -361,28 +367,41 @@ LE_RESPOSTA_USUARIO_FACIL PROC
     MOV BX,AX 
     SUB BX,9
 
- ; entrada do caractere da linha
+ ; entrada do caractere da coluna
+ VOLTA2:
     LEA DX, MSG14
     IMPRIME_MSG
     ENTRADA_CARACTERE
-    SUB AL,31H              
+    PUSHREGISTRADOR
+    SUB AL,30H
+        CMP AL, 9
+        JG VOLTA2
+        CMP AL, 0
+        JLE VOLTA2
+    POPREGISTRADOR
+    SUB AL,31H
+
 
     XOR AH,AH
     MOV SI,AX
 
  ; recebe o numero que vai para a matriz caso correto
+ VOLTA4:
     LEA DX, MSG15
     IMPRIME_MSG
     ENTRADA_CARACTERE
     SUB AL, 30H
+        CMP AL, 9
+        JG VOLTA4
+        CMP AL, 0
+        JLE VOLTA4
 
  ; comparar o numero da entrada com a matriz resposta
-    CMP AL, JOGO_FACIL[BX][SI]
-    JE PULA9
+        CMP AL, JOGO_FACIL[BX][SI]
+        JE PULA9
 
-    CMP AL, JOGO_FACIL_RESPOSTA[BX][SI]
-
-    JE ACERTO
+        CMP AL, JOGO_FACIL_RESPOSTA[BX][SI]
+        JE ACERTO
  ; contador de erros
     PUSH DX
     XOR DL,DL
@@ -420,11 +439,16 @@ LE_RESPOSTA_USUARIO_MEDIO PROC
     PUSHREGISTRADOR
     LIMPA_REGISTRADOR
 
- ; entrada do caractere da coluna
+ ; entrada do caractere da linha
+ VOLTA11:
     LEA DX, MSG13
     IMPRIME_MSG
     ENTRADA_CARACTERE
     SUB AL,30H
+        CMP AL, 9
+        JG VOLTA11
+        CMP AL, 0
+        JLE VOLTA11
 
     MOV CX, 9
     MUL CX
@@ -433,20 +457,33 @@ LE_RESPOSTA_USUARIO_MEDIO PROC
     MOV BX,AX 
     SUB BX,9
 
- ; entrada do caractere da linha
+ ; entrada do caractere da coluna
+ VOLTA12:
     LEA DX, MSG14
     IMPRIME_MSG
     ENTRADA_CARACTERE
-    SUB AL,31H              
+    PUSHREGISTRADOR
+    SUB AL,30H
+        CMP AL, 9
+        JG VOLTA12
+        CMP AL, 0
+        JLE VOLTA12
+    POPREGISTRADOR
+    SUB AL,31H
 
     XOR AH,AH
     MOV SI,AX
 
  ; recebe o numero que vai para a matriz caso correto
+ VOLTA13:
     LEA DX, MSG15
     IMPRIME_MSG
     ENTRADA_CARACTERE
     SUB AL, 30H
+        CMP AL, 9
+        JG VOLTA13
+        CMP AL, 0
+        JLE VOLTA13
 
  ; comparar o numero da entrada com a matriz resposta
     CMP AL, JOGO_MEDIO[BX][SI]
@@ -490,11 +527,16 @@ LE_RESPOSTA_USUARIO_DIFICIL PROC
     PUSHREGISTRADOR
     LIMPA_REGISTRADOR
 
- ; entrada do caractere da coluna
+ ; entrada do caractere da linha
+ VOLTA21:
     LEA DX, MSG13
     IMPRIME_MSG
     ENTRADA_CARACTERE
     SUB AL,30H
+        CMP AL, 9
+        JG VOLTA21
+        CMP AL, 0
+        JLE VOLTA21
 
     MOV CX, 9
     MUL CX
@@ -503,20 +545,33 @@ LE_RESPOSTA_USUARIO_DIFICIL PROC
     MOV BX,AX 
     SUB BX,9
 
- ; entrada do caractere da linha
+ ; entrada do caractere da coluna
+ VOLTA22:
     LEA DX, MSG14
     IMPRIME_MSG
     ENTRADA_CARACTERE
-    SUB AL,31H              
+    PUSHREGISTRADOR
+    SUB AL,30H
+        CMP AL, 9
+        JG VOLTA22
+        CMP AL, 0
+        JLE VOLTA22
+    POPREGISTRADOR
+    SUB AL,31H
 
     XOR AH,AH
     MOV SI,AX
 
  ; recebe o numero que vai para a matriz caso correto
+ VOLTA23:
     LEA DX, MSG15
     IMPRIME_MSG
     ENTRADA_CARACTERE
     SUB AL, 30H
+        CMP AL, 9
+        JG VOLTA23
+        CMP AL, 0
+        JLE VOLTA23
 
  ; comparar o numero da entrada com a matriz resposta
     CMP AL, JOGO_FACIL[BX][SI]
@@ -579,10 +634,6 @@ CONTADOR_ACERTOS_FACIL PROC
     LEA DX, MSG29
     IMPRIME_MSG
     CALL OUTPUT
-    ;MOV DL, CORRETO
-    ;ADD DL, 30H
-    ;MOV AH, 02
-    ;INT 21H
     LEA DX, MSG31
     IMPRIME_MSG
     PULA_LINHA
@@ -597,9 +648,7 @@ CONTADOR_ACERTOS_MEDIO PROC
     LEA DX, MSG29
     IMPRIME_MSG
     MOV DL, CORRETO
-    ADD DL, 30H
-    MOV AH, 02
-    INT 21H
+    CALL OUTPUT
     LEA DX, MSG30
     IMPRIME_MSG
     PULA_LINHA
@@ -614,9 +663,7 @@ CONTADOR_ACERTOS_DIFICIL PROC
     LEA DX, MSG29
     IMPRIME_MSG
     MOV DL, CORRETO
-    ADD DL, 30H
-    MOV AH, 02
-    INT 21H
+    CALL OUTPUT
     LEA DX, MSG32
     IMPRIME_MSG
     PULA_LINHA
@@ -678,7 +725,7 @@ CONTINUA_OU_NAO_ERRO ENDP
 VENCEU_FACIL PROC
     PUSHREGISTRADOR
 
-    MOV DL, CORRETO
+    MOV DL, CORRETO         ; limite de acertos do jogo
     CMP DL, 43
 
     POPREGISTRADOR
@@ -699,7 +746,7 @@ VENCEU_DIFICIL PROC
     PUSHREGISTRADOR
 
     MOV DL, CORRETO
-    CMP DL, 53
+    CMP DL, 52
 
     POPREGISTRADOR
     RET
