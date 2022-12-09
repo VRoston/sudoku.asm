@@ -76,17 +76,26 @@ ENDM
     MSG4  DB 10, 13, '    I  - O JOGO CONSISTE EM PREENCHER OS ESPACOS ONDE ESTA 0 COM OS NUMEROS DE   1 A 9 CADA LINHA, COLUNA E MATRIZ 3X3 NAO DEVE CONTER OS NUMEROS DE 1 A 9 REPE- TIDOS', '$'
     MSG6  DB 10, 13, '    II - O JOGO POSSUI 3 NIVEIS DE DIFICULDADE: FACIL, MEDIO, DIFICL', '$'
     MSG7  DB 10, 13, '    III- PARA JOGAR DIGITE O NUMERO DA COLUNA E DA LINHA AO QUAL VOCE QUER ATRI- BUIR O VALOR DEPOIS BASTA DIGITAR O VALOR A SER ATRIBUIDO E APERTAR ENTER', '$'
-    MSG9  DB 10, 13, '    IV - VOCE TERA DIREITO A 4 ERROS NO JOGO, SENDO NO 4 ERRO FIM DE JOGO', '$'
+    MSG9  DB 10, 13, '    IV - VOCE TERA DIREITO A 3 ERROS NO JOGO, SENDO NO 3 ERRO FIM DE JOGO', '$'
     MSG10 DB 10, 13, '    V  - PARA FINALIZAR O JOGO DIGITE 0 NA LINHA E NA COLUNA', '$'
     MSG11 DB 10, 13, ' ERROS :', '$'
     MSG12 DB         '/3 :', '$'
-    MSG13 DB 10, 13, ' ENTRE COM A COLUNA:', '$'
-    MSG14 DB 10, 13, ' ENTRE COM A LINHA:', '$'
+    MSG13 DB 10, 13, ' ENTRE COM A LINHA:', '$'
+    MSG14 DB 10, 13, ' ENTRE COM A COLUNA:', '$'
     MSG15 DB 10, 13, ' INSIRA O NUMERO:', '$'
     MSG16 DB 10, 13, ' VOCE ERROU', '$'
-    MSG17 DB 10, 13,10,13, '    1-FACIL', '$'
+    MSG17 DB 10, 13,  '    1-FACIL', '$'
     MSG18 DB 10, 13,10,13, '    2-MEDIO', '$'
     MSG19 DB 10, 13,10,13, '    3-DIFICIL', '$'
+    MSG26 DB 10, 13,10,13, '    4-FECHAR JOGO', '$'
+    MSG20 DB 10, 13, ' ESCOLHA O NIVEL DE DIFICULDADE (DIGITE O NUMERO DE 1 A 3):', '$'
+    MSG21 DB 10, 13, ' NIVEL FACIL', '$'
+    MSG22 DB 10, 13, ' NIVEL MEDIO', '$'
+    MSG23 DB 10, 13, ' NIVEL DIFICIL', '$'
+    MSG24 DB 10, 13,10,13,10,13, '               GAME OVER', '$'
+    MSG25 DB 10, 13,             '         PARABENS VOCE GANHOU', '$'
+    MSG27 DB 10, 13, '                   ===///OBRIGADO POR JOGAR O SUDOKU\\\===', '$'
+    MSG28 DB 10, 13, ' PROJETO DESENVOLVIDO POR VICTOR DE MELO ROSTON', '$'
 
  ; contadores do jogo
     CORRETO DB ?
@@ -95,6 +104,10 @@ ENDM
  ; auxiliar das matrizes
     LINHA EQU 9
     COLUNA EQU 9
+
+ ; matriz padrao do jogo
+    JOGO DB LINHA DUP (COLUNA DUP (?))
+    JOGO_RESPOSTA DB LINHA DUP (COLUNA DUP (?))
 
  ; matriz do jogo facil
     JOGO_FACIL DB 4,2,7,  5,?,8,  9,?,3
@@ -123,56 +136,56 @@ ENDM
                         DB 2,5,6,  4,7,3,  8,9,1
 
  ; matriz do jogo medio
-    JOGO_MEDIO DB 1,1,1,  5,?,8,  9,?,3
-               DB ?,?,5,  ?,4,?,  ?,?,7
-               DB 6,8,?,  ?,?,?,  ?,?,7
+    JOGO_MEDIO DB 1,3,?,  4,?,?,  ?,?,?
+               DB 5,?,?,  ?,6,?,  ?,3,?
+               DB ?,?,?,  ?,?,?,  2,?,9
                
-               DB 7,6,?,  ?,1,?,  ?,3,?
-               DB 1,?,2,  ?,?,5,  ?,?,9
-               DB ?,9,8,  ?,?,4,  ?,6,?
+               DB 4,?,7,  ?,1,3,  ?,6,?
+               DB ?,?,?,  2,?,4,  1,9,?
+               DB 9,?,?,  ?,8,?,  ?,?,2
                
-               DB 3,?,?,  8,5,1,  ?,?,?
-               DB 8,7,1,  ?,?,6,  ?,?,?
-               DB 2,?,6,  4,?,3,  ?,?,1
+               DB 8,?,?,  3,4,?,  9,?,?
+               DB 3,?,?,  ?,?,6,  8,?,1
+               DB ?,?,?,  ?,?,1,  ?,?,3
 
  ; matriz resposta do jogo medio
-    JOGO_MEDIO_RESPOSTA DB 4,2,7,  5,?,8,  9,?,3
-                        DB ?,?,5,  ?,4,?,  ?,?,7
-                        DB 6,8,?,  ?,?,?,  ?,?,7
+    JOGO_MEDIO_RESPOSTA DB 1,3,2,  4,7,9,  6,8,5
+                        DB 5,9,8,  1,6,2,  7,3,4
+                        DB 7,6,4,  5,3,8,  2,1,9
                
-                        DB 7,6,?,  ?,1,?,  ?,3,?
-                        DB 1,?,2,  ?,?,5,  ?,?,9
-                        DB ?,9,8,  ?,?,4,  ?,6,?
+                        DB 4,2,7,   9,1,3,  5,6,8
+                        DB 6,8,3,  2,5,4,  1,9,7
+                        DB 9,1,5,  6,8,7,  3,4,2
                
-                        DB 3,?,?,  8,5,1,  ?,?,?
-                        DB 8,7,1,  ?,?,6,  ?,?,?
-                        DB 2,?,6,  4,?,3,  ?,?,1
+                        DB 8,7,1,  3,4,5,  9,2,6
+                        DB 3,4,9,  7,2,6,  8,5,1
+                        DB 2,5,6,  8,9,1,  4,7,3
 
  ; matriz do jogo dificil
-    JOGO_DIFICIL DB 2,2,2,  5,?,8,  9,?,3
-                 DB ?,?,5,  ?,4,?,  ?,?,7
-                 DB 6,8,?,  ?,?,?,  ?,?,7
+    JOGO_DIFICIL  DB ?,8,?,  9,?,3,  ?,?,2
+                  DB 3,?,4,  ?,?,?,  ?,5,?
+                  DB ?,7,9,  2,5,?,  6,?,?
                
-                 DB 7,6,?,  ?,1,?,  ?,3,?
-                 DB 1,?,2,  ?,?,5,  ?,?,9
-                 DB ?,9,8,  ?,?,4,  ?,6,?
+                  DB ?,5,8,  ?,7,?,  1,2,?
+                  DB ?,?,?,  1,?,?,  5,?,?
+                  DB ?,?,1,  ?,?,?,  7,?,?
                
-                 DB 3,?,?,  8,5,1,  ?,?,?
-                 DB 8,7,1,  ?,?,6,  ?,?,?
-                 DB 2,?,6,  4,?,3,  ?,?,1
+                  DB ?,?,7,  8,?,?,  ?,6,?
+                  DB ?,?,?,  ?,?,6,  ?,9,?
+                  DB 9,?,2,  ?,?,?,  ?,?,?
                  
  ; matriz resposta do jogo dificil
-    JOGO_DIFICIL_RESPOSTA DB 4,2,7,  5,?,8,  9,?,3
-                          DB ?,?,5,  ?,4,?,  ?,?,7
-                          DB 6,8,?,  ?,?,?,  ?,?,7
+    JOGO_DIFICIL_RESPOSTA DB 5,8,6,  9,1,3,  4,7,2
+                          DB 3,2,4,  6,8,7,  9,5,1
+                          DB 1,7,9,  2,5,4,  6,3,8
                
-                          DB 7,6,?,  ?,1,?,  ?,3,?
-                          DB 1,?,2,  ?,?,5,  ?,?,9
-                          DB ?,9,8,  ?,?,4,  ?,6,?
+                          DB 6,5,8,  4,7,9,  1,2,3
+                          DB 7,4,3,  1,6,2,  5,8,9
+                          DB 2,9,1,  5,3,8,  7,4,6
                
-                          DB 3,?,?,  8,5,1,  ?,?,?
-                          DB 8,7,1,  ?,?,6,  ?,?,?
-                          DB 2,?,6,  4,?,3,  ?,?,1
+                          DB 4,3,7,  8,9,1,  2,6,5
+                          DB 8,1,5,  7,2,6,  3,9,4
+                          DB 9,6,2,  3,4,5,  8,1,7
 
 
 
@@ -182,52 +195,77 @@ MAIN PROC
     MOV DS, AX
     MOV ES, AX
 
-    MOV ERRADO, 0
-
     CALL PRIMEIRA_PAGINA        ; tela de apresentação (Título piscando)
+    
+VOLTA_MENU:    
     LIMPA_TELA
-    
-    CALL MENU_PRINCIPAL         ; menu principal
-        JG JOGO_HARD
-        JE JOGO_MEDIUM
-        JL JOGO_EASY
 
-    
+    MOV ERRADO, 0
+    MOV CORRETO, 0
+
+    CALL MENU_PRINCIPAL         ; menu principal
+    CMP AL, 1
+        JL JOGO_EASY
+    CMP AL, 2
+        JE JOGO_MEDIUM
+    CMP AL, 3
+        JE JOGO_HARD
+    CMP AL, 4
+        JE ENCERRA_PROGRAMA2
+
 
 JOGO_EASY:
     LIMPA_TELA
     LEA BX, JOGO_FACIL
     CALL CONTADOR_ERROS
     CALL IMP_MATRIZ
-    CALL LE_RESPOSTA_USUARIO
-    CALL CONTINUA_OU_NAO
-        JL JOGO_EASY
-        JMP ENCERRA_PROGRAMA
+    CALL LE_RESPOSTA_USUARIO_FACIL
+    CALL CONTINUA_OU_NAO_ERRO
+        JE GAME_OVER2
+    CALL VENCEU_FACIL
+        JE YOU_WIN2
+    JMP JOGO_EASY
 
 JOGO_MEDIUM:
     LIMPA_TELA
     LEA BX, JOGO_MEDIO
     CALL CONTADOR_ERROS
     CALL IMP_MATRIZ
-    CALL LE_RESPOSTA_USUARIO
-    CALL CONTINUA_OU_NAO
-        JL JOGO_MEDIUM
-        JMP ENCERRA_PROGRAMA
+    CALL LE_RESPOSTA_USUARIO_MEDIO
+    CALL CONTINUA_OU_NAO_ERRO
+        JE GAME_OVER2
+    CALL VENCEU_MEDIO
+        JE YOU_WIN2
+    JMP JOGO_MEDIUM
+
+ENCERRA_PROGRAMA2:
+    JMP ENCERRA_PROGRAMA
 
 JOGO_HARD:
     LIMPA_TELA
     LEA BX, JOGO_DIFICIL
     CALL CONTADOR_ERROS
     CALL IMP_MATRIZ
-    CALL LE_RESPOSTA_USUARIO
-    CALL CONTINUA_OU_NAO
-        JL JOGO_HARD
-        JMP ENCERRA_PROGRAMA
+    CALL LE_RESPOSTA_USUARIO_DIFICIL
+    CALL CONTINUA_OU_NAO_ERRO
+        JE GAME_OVER2
+    CALL VENCEU_DIFICIL
+        JE YOU_WIN2
+    JMP JOGO_HARD
 
 
+GAME_OVER2:
+    CALL GAME_OVER
+    JMP VOLTA_MENU
+    ENTRADA_CARACTERE
+
+YOU_WIN2:
+    CALL YOU_WIN
+    JMP VOLTA_MENU
+    ENTRADA_CARACTERE
     
 ENCERRA_PROGRAMA:
-    ;CALL FIM_PROGRAMA
+    CALL FIM_PROGRAMA
     EXIT_DOS
 MAIN ENDP
 
@@ -268,24 +306,24 @@ PRIMEIRA_PAGINA ENDP
 MENU_PRINCIPAL PROC
     LEA DX, MSG4
     IMPRIME_MSG
-    ;LEA DX, MSG5
-    ;IMPRIME_MSG
     LEA DX, MSG6
     IMPRIME_MSG
     LEA DX, MSG7
     IMPRIME_MSG
-    ;LEA DX, MSG8
-    ;IMPRIME_MSG
     LEA DX, MSG9
     IMPRIME_MSG
     LEA DX, MSG10
     IMPRIME_MSG
     PULA_LINHA
+    LEA DX, MSG20
+    IMPRIME_MSG
     LEA DX, MSG17
     IMPRIME_MSG
     LEA DX, MSG18
     IMPRIME_MSG
     LEA DX, MSG19
+    IMPRIME_MSG
+    LEA DX, MSG26
     IMPRIME_MSG
 
     ENTRADA_CARACTERE
@@ -296,7 +334,7 @@ MENU_PRINCIPAL PROC
 MENU_PRINCIPAL ENDP
 
 ; entrada das posicoes da matriz e o numero a ser inserido
-LE_RESPOSTA_USUARIO PROC
+LE_RESPOSTA_USUARIO_FACIL PROC
     PUSHREGISTRADOR
     LIMPA_REGISTRADOR
 
@@ -362,7 +400,143 @@ SAI:
     POPREGISTRADOR
 
     RET
-LE_RESPOSTA_USUARIO ENDP
+LE_RESPOSTA_USUARIO_FACIL ENDP
+
+LE_RESPOSTA_USUARIO_MEDIO PROC
+    PUSHREGISTRADOR
+    LIMPA_REGISTRADOR
+
+ ; entrada do caractere da coluna
+    LEA DX, MSG13
+    IMPRIME_MSG
+    ENTRADA_CARACTERE
+    SUB AL,30H
+
+    MOV CX, 9
+    MUL CX
+    XOR AH,AH
+
+    MOV BX,AX 
+    SUB BX,9
+
+ ; entrada do caractere da linha
+    LEA DX, MSG14
+    IMPRIME_MSG
+    ENTRADA_CARACTERE
+    SUB AL,31H              
+
+    XOR AH,AH
+    MOV SI,AX
+
+ ; recebe o numero que vai para a matriz caso correto
+    LEA DX, MSG15
+    IMPRIME_MSG
+    ENTRADA_CARACTERE
+    SUB AL, 30H
+
+ ; comparar o numero da entrada com a matriz resposta
+    CMP AL, JOGO_MEDIO_RESPOSTA[BX][SI]
+
+    JE ACERTO2
+ ; contador de erros
+    PUSH DX
+    XOR DL,DL
+    MOV DL, ERRADO
+    INC DL
+    MOV ERRADO, DL
+    POP DX
+
+    JMP SAI2
+    XOR AX, AX
+
+ ; passa a resposta para a matriz
+ACERTO2:
+    ADD AL, 30H
+    MOV JOGO_MEDIO[BX][SI], AL
+
+ ; contador de acertos
+    PUSH DX
+    XOR DL,DL
+    MOV DL, CORRETO
+    INC DL
+    MOV CORRETO, DL
+    POP DX
+
+    JMP SAI2
+SAI2:
+
+    POPREGISTRADOR
+
+    RET
+LE_RESPOSTA_USUARIO_MEDIO ENDP
+
+LE_RESPOSTA_USUARIO_DIFICIL PROC
+    PUSHREGISTRADOR
+    LIMPA_REGISTRADOR
+
+ ; entrada do caractere da coluna
+    LEA DX, MSG13
+    IMPRIME_MSG
+    ENTRADA_CARACTERE
+    SUB AL,30H
+
+    MOV CX, 9
+    MUL CX
+    XOR AH,AH
+
+    MOV BX,AX 
+    SUB BX,9
+
+ ; entrada do caractere da linha
+    LEA DX, MSG14
+    IMPRIME_MSG
+    ENTRADA_CARACTERE
+    SUB AL,31H              
+
+    XOR AH,AH
+    MOV SI,AX
+
+ ; recebe o numero que vai para a matriz caso correto
+    LEA DX, MSG15
+    IMPRIME_MSG
+    ENTRADA_CARACTERE
+    SUB AL, 30H
+
+ ; comparar o numero da entrada com a matriz resposta
+    CMP AL, JOGO_DIFICIL_RESPOSTA[BX][SI]
+
+    JE ACERTO3
+ ; contador de erros
+    PUSH DX
+    XOR DL,DL
+    MOV DL, ERRADO
+    INC DL
+    MOV ERRADO, DL
+    POP DX
+
+    JMP SAI3
+    XOR AX, AX
+
+ ; passa a resposta para a matriz
+ACERTO3:
+    ADD AL, 30H
+    MOV JOGO_DIFICIL[BX][SI], AL
+
+ ; contador de acertos
+    PUSH DX
+    XOR DL,DL
+    MOV DL, CORRETO
+    INC DL
+    MOV CORRETO, DL
+    POP DX
+
+    JMP SAI3
+SAI3:
+
+    POPREGISTRADOR
+
+    RET
+LE_RESPOSTA_USUARIO_DIFICIL ENDP
 
 ; contador de erros
 CONTADOR_ERROS PROC
@@ -421,7 +595,7 @@ IMP_MATRIZ PROC
 IMP_MATRIZ ENDP
 
 ; realiza uma verificacao se o jogo acabou ou nao
-CONTINUA_OU_NAO PROC
+CONTINUA_OU_NAO_ERRO PROC
     PUSHREGISTRADOR
 
     MOV DL, ERRADO
@@ -429,11 +603,100 @@ CONTINUA_OU_NAO PROC
 
     POPREGISTRADOR
     RET
-CONTINUA_OU_NAO ENDP
+CONTINUA_OU_NAO_ERRO ENDP
+
+; realiza uma verificacao se o jogo acabou ou nao
+VENCEU_FACIL PROC
+    PUSHREGISTRADOR
+
+    MOV DL, CORRETO
+    CMP DL, 43
+
+    POPREGISTRADOR
+    RET
+VENCEU_FACIL ENDP
+
+VENCEU_MEDIO PROC
+    PUSHREGISTRADOR
+
+    MOV DL, CORRETO
+    CMP DL, 51
+
+    POPREGISTRADOR
+    RET
+VENCEU_MEDIO ENDP
+
+VENCEU_DIFICIL PROC
+    PUSHREGISTRADOR
+
+    MOV DL, CORRETO
+    CMP DL, 53
+
+    POPREGISTRADOR
+    RET
+VENCEU_DIFICIL ENDP
+
+; menssagem que perdeu
+GAME_OVER PROC
+ ; limpa a tela
+    MOV AH, 00                   ; tipo de video
+    MOV AL, 00                   ; tipo de texto 40x25
+    INT 10H                      ; executa a entrada de video
+
+ ; formata o modo de video
+    MOV AH, 09                   ; escrever um caractere e atributo para a posicao do cursos
+    MOV AL, 20H                  ; o caractere a mostrar
+    MOV BH, 00                   ; numero da pagina
+    MOV BL, 84H                  ; atribuicao de cor
+    MOV CX, 800H                 ; numero de vezes a escrever o caractere
+    INT 10H                      ; executa a entrada de video
+
+    LEA DX, MSG24
+    IMPRIME_MSG
+
+    ENTRADA_CARACTERE
+
+    RET
+GAME_OVER ENDP
+
+; menssagem que venceu
+YOU_WIN PROC
+     ; limpa a tela
+    MOV AH, 00                   ; tipo de video
+    MOV AL, 00                   ; tipo de texto 40x25
+    INT 10H                      ; executa a entrada de video
+
+ ; formata o modo de video
+    MOV AH, 09                   ; escrever um caractere e atributo para a posicao do cursos
+    MOV AL, 20H                  ; o caractere a mostrar
+    MOV BH, 00                   ; numero da pagina
+    MOV BL, 82H                  ; atribuicao de cor
+    MOV CX, 800H                 ; numero de vezes a escrever o caractere
+    INT 10H                      ; executa a entrada de video
+
+    LEA DX, MSG25
+    IMPRIME_MSG
+
+    ENTRADA_CARACTERE
+
+    RET
+YOU_WIN ENDP
 
 ; limpa a tela e imprime a menssagem de despedida
 FIM_PROGRAMA PROC
     LIMPA_TELA
+
+    LEA DX, MSG27
+    IMPRIME_MSG
+
+    MOV CX, 18
+VOLTA3:
+    PULA_LINHA
+    LOOP VOLTA3
+
+    LEA DX, MSG28
+    IMPRIME_MSG
+
     RET
 FIM_PROGRAMA ENDP
 END MAIN
