@@ -105,9 +105,6 @@ ENDM
     LINHA EQU 9
     COLUNA EQU 9
 
- ; matriz padrao do jogo
-    JOGO DB LINHA DUP (COLUNA DUP (?))
-    JOGO_RESPOSTA DB LINHA DUP (COLUNA DUP (?))
 
  ; matriz do jogo facil
     JOGO_FACIL DB 4,2,7,  5,?,8,  9,?,3
