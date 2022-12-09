@@ -80,10 +80,15 @@ ENDM
     MSG10 DB 10, 13, '    V  - PARA FINALIZAR O JOGO DIGITE 0 NA LINHA E NA COLUNA', '$'
     MSG11 DB 10, 13, ' ERROS :', '$'
     MSG12 DB         '/3 :', '$'
+    MSG29 DB         '        ACERTOS :', '$'
+    MSG31 DB         '/43 :', '$'
+    MSG30 DB         '/51 :', '$'
+    MSG32 DB         '/53 :', '$'
     MSG13 DB 10, 13, ' ENTRE COM A LINHA:', '$'
     MSG14 DB 10, 13, ' ENTRE COM A COLUNA:', '$'
     MSG15 DB 10, 13, ' INSIRA O NUMERO:', '$'
     MSG16 DB 10, 13, ' VOCE ERROU', '$'
+    MSG08 DB 10, 13, ' VOCE ACERTOU', '$'
     MSG17 DB 10, 13,  '    1-FACIL', '$'
     MSG18 DB 10, 13,10,13, '    2-MEDIO', '$'
     MSG19 DB 10, 13,10,13, '    3-DIFICIL', '$'
@@ -150,7 +155,7 @@ ENDM
                         DB 5,9,8,  1,6,2,  7,3,4
                         DB 7,6,4,  5,3,8,  2,1,9
                
-                        DB 4,2,7,   9,1,3,  5,6,8
+                        DB 4,2,7,  9,1,3,  5,6,8
                         DB 6,8,3,  2,5,4,  1,9,7
                         DB 9,1,5,  6,8,7,  3,4,2
                
@@ -202,19 +207,21 @@ VOLTA_MENU:
 
     CALL MENU_PRINCIPAL         ; menu principal
     CMP AL, 1
-        JL JOGO_EASY
+        JE JOGO_EASY
     CMP AL, 2
         JE JOGO_MEDIUM
     CMP AL, 3
         JE JOGO_HARD
     CMP AL, 4
         JE ENCERRA_PROGRAMA2
+    JMP VOLTA_MENU
 
 
 JOGO_EASY:
     LIMPA_TELA
     LEA BX, JOGO_FACIL
     CALL CONTADOR_ERROS
+    CALL CONTADOR_ACERTOS_FACIL
     CALL IMP_MATRIZ
     CALL LE_RESPOSTA_USUARIO_FACIL
     CALL CONTINUA_OU_NAO_ERRO
@@ -227,6 +234,7 @@ JOGO_MEDIUM:
     LIMPA_TELA
     LEA BX, JOGO_MEDIO
     CALL CONTADOR_ERROS
+    CALL CONTADOR_ACERTOS_MEDIO
     CALL IMP_MATRIZ
     CALL LE_RESPOSTA_USUARIO_MEDIO
     CALL CONTINUA_OU_NAO_ERRO
@@ -242,6 +250,7 @@ JOGO_HARD:
     LIMPA_TELA
     LEA BX, JOGO_DIFICIL
     CALL CONTADOR_ERROS
+    CALL CONTADOR_ACERTOS_DIFICIL
     CALL IMP_MATRIZ
     CALL LE_RESPOSTA_USUARIO_DIFICIL
     CALL CONTINUA_OU_NAO_ERRO
@@ -325,7 +334,7 @@ MENU_PRINCIPAL PROC
 
     ENTRADA_CARACTERE
     SUB AL,30H
-    CMP AL, 2
+
 
     RET
 MENU_PRINCIPAL ENDP
@@ -364,6 +373,9 @@ LE_RESPOSTA_USUARIO_FACIL PROC
     SUB AL, 30H
 
  ; comparar o numero da entrada com a matriz resposta
+    CMP AL, JOGO_FACIL[BX][SI]
+    JE PULA9
+
     CMP AL, JOGO_FACIL_RESPOSTA[BX][SI]
 
     JE ACERTO
@@ -376,7 +388,8 @@ LE_RESPOSTA_USUARIO_FACIL PROC
     POP DX
 
     JMP SAI
-    XOR AX, AX
+ ; limpa a resposta ja que esta errada
+    XOR AX, AX              
 
  ; passa a resposta para a matriz
 ACERTO:
@@ -393,7 +406,7 @@ ACERTO:
 
     JMP SAI
 SAI:
-
+PULA9:
     POPREGISTRADOR
 
     RET
@@ -432,6 +445,8 @@ LE_RESPOSTA_USUARIO_MEDIO PROC
     SUB AL, 30H
 
  ; comparar o numero da entrada com a matriz resposta
+    CMP AL, JOGO_MEDIO[BX][SI]
+    JE PULA6
     CMP AL, JOGO_MEDIO_RESPOSTA[BX][SI]
 
     JE ACERTO2
@@ -461,7 +476,7 @@ ACERTO2:
 
     JMP SAI2
 SAI2:
-
+PULA6:
     POPREGISTRADOR
 
     RET
@@ -500,6 +515,9 @@ LE_RESPOSTA_USUARIO_DIFICIL PROC
     SUB AL, 30H
 
  ; comparar o numero da entrada com a matriz resposta
+    CMP AL, JOGO_FACIL[BX][SI]
+    JE PULA8
+
     CMP AL, JOGO_DIFICIL_RESPOSTA[BX][SI]
 
     JE ACERTO3
@@ -511,11 +529,11 @@ LE_RESPOSTA_USUARIO_DIFICIL PROC
     MOV ERRADO, DL
     POP DX
 
-    JMP SAI3
+    JMP PULA8
     XOR AX, AX
 
  ; passa a resposta para a matriz
-ACERTO3:
+ ACERTO3:
     ADD AL, 30H
     MOV JOGO_DIFICIL[BX][SI], AL
 
@@ -527,9 +545,7 @@ ACERTO3:
     MOV CORRETO, DL
     POP DX
 
-    JMP SAI3
-SAI3:
-
+ PULA8:
     POPREGISTRADOR
 
     RET
@@ -547,11 +563,62 @@ CONTADOR_ERROS PROC
     INT 21H
     LEA DX, MSG12
     IMPRIME_MSG
-    PULA_LINHA
 
     POPREGISTRADOR
     RET
 CONTADOR_ERROS ENDP
+
+; contador de acertos
+CONTADOR_ACERTOS_FACIL PROC
+    PUSHREGISTRADOR
+    LIMPA_REGISTRADOR
+    LEA DX, MSG29
+    IMPRIME_MSG
+    MOV DL, CORRETO
+    ADD DL, 30H
+    MOV AH, 02
+    INT 21H
+    LEA DX, MSG31
+    IMPRIME_MSG
+    PULA_LINHA
+
+    POPREGISTRADOR
+    RET
+CONTADOR_ACERTOS_FACIL ENDP
+
+CONTADOR_ACERTOS_MEDIO PROC
+    PUSHREGISTRADOR
+    LIMPA_REGISTRADOR
+    LEA DX, MSG29
+    IMPRIME_MSG
+    MOV DL, CORRETO
+    ADD DL, 30H
+    MOV AH, 02
+    INT 21H
+    LEA DX, MSG30
+    IMPRIME_MSG
+    PULA_LINHA
+
+    POPREGISTRADOR
+    RET
+CONTADOR_ACERTOS_MEDIO ENDP
+
+CONTADOR_ACERTOS_DIFICIL PROC
+    PUSHREGISTRADOR
+    LIMPA_REGISTRADOR
+    LEA DX, MSG29
+    IMPRIME_MSG
+    MOV DL, CORRETO
+    ADD DL, 30H
+    MOV AH, 02
+    INT 21H
+    LEA DX, MSG32
+    IMPRIME_MSG
+    PULA_LINHA
+
+    POPREGISTRADOR
+    RET
+CONTADOR_ACERTOS_DIFICIL ENDP
 
 ; imprime uma mensagem na tela
 IMP_MATRIZ PROC
